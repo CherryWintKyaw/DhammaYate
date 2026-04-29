@@ -11,6 +11,7 @@ import FavScreen from './src/screen/FavScreen';
 import SettingsScreen from './src/screen/SettingsScreen';
 import SubListScreen from './src/screen/SubListScreen';
 import DetailScreen from './src/screen/DetailScreen';
+import SearchScreen from './src/screen/SearchScreen';
 import { FavoriteProvider } from './src/context/FavoriteContext';
 import { SettingsProvider, SettingsContext } from './src/context/SettingsContext';
 
@@ -32,6 +33,7 @@ function MyTabs() {
           let iconName;
           if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
           else if (route.name === 'About') iconName = focused ? 'information-circle' : 'information-circle-outline';
+          else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
           else if (route.name === 'Favourite') iconName = focused ? 'heart' : 'heart-outline';
           else if (route.name === 'Settings') iconName = focused ? 'settings' : 'settings-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -52,6 +54,7 @@ function MyTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="About" component={AboutScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Favourite" component={FavScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

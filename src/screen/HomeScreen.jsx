@@ -14,10 +14,10 @@ const HomeScreen = ({ navigation }) => {
     <TouchableOpacity
       activeOpacity={0.7}
       style={[
-        styles.card, 
-        { 
+        styles.card,
+        {
           backgroundColor: isDarkMode ? '#2C2C2C' : 'white', // Card အရောင်
-          borderColor: isDarkMode ? '#444' : '#f0f0f0' 
+          borderColor: isDarkMode ? '#444' : '#f0f0f0'
         }
       ]}
       onPress={() => {
@@ -36,28 +36,32 @@ const HomeScreen = ({ navigation }) => {
           {item.title}
         </Text>
       </View>
-      <Ionicons 
-        name="chevron-forward-outline" 
-        size={18} 
-        color={isDarkMode ? '#8D7B68' : '#675032'} 
+      <Ionicons
+        name="chevron-forward-outline"
+        size={18}
+        color={isDarkMode ? '#8D7B68' : '#675032'}
       />
     </TouchableOpacity>
+
+
   );
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#1A1A1A' : 'white' }]}>
       {/* StatusBar အရောင်ကိုပါ Mode အလိုက် ပြောင်းမယ် */}
-      <StatusBar 
-        barStyle={isDarkMode ? "light-content" : "dark-content"} 
-        backgroundColor={isDarkMode ? "#1A1A1A" : "white"} 
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={isDarkMode ? "#1A1A1A" : "white"}
       />
-      
+
       <View style={[styles.container, { backgroundColor: isDarkMode ? '#1A1A1A' : 'white' }]}>
         {/* Modern Header */}
         <View style={styles.header}>
           <Text style={[styles.headerTitle, { color: isDarkMode ? '#FDF8F2' : '#675032' }]}>ဓမ္မရိပ်</Text>
           <View style={[styles.headerUnderline, { backgroundColor: isDarkMode ? '#8D7B68' : '#675032' }]} />
         </View>
+
+        
 
         {/* List Area */}
         <FlatList
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 100, 
+    paddingBottom: 100,
   },
   card: {
     flexDirection: 'row',
@@ -132,6 +136,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Pyidaungsu',
     flexShrink: 1,
   },
+
+  searchBar: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginHorizontal: 20,
+  padding: 12,
+  borderRadius: 12,
+  marginBottom: 10,
+},
+searchText: {
+  marginLeft: 10,
+  fontFamily: 'Pyidaungsu',
+  fontSize: 16,
+}
 });
 
 export default HomeScreen;
