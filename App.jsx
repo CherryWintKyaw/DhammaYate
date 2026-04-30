@@ -1,8 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+// Firebase Analytics Import
+import analytics from '@react-native-firebase/analytics';
 
 // Screens
 import HomeScreen from './src/screen/HomeScreen';
@@ -12,6 +15,8 @@ import SettingsScreen from './src/screen/SettingsScreen';
 import SubListScreen from './src/screen/SubListScreen';
 import DetailScreen from './src/screen/DetailScreen';
 import SearchScreen from './src/screen/SearchScreen';
+
+// Context Providers
 import { FavoriteProvider } from './src/context/FavoriteContext';
 import { SettingsProvider, SettingsContext } from './src/context/SettingsContext';
 
@@ -61,12 +66,40 @@ function MyTabs() {
   );
 }
 
-// 2. Navigation Container Wrapper (Dark Mode အတွက်)
+// ၂။ Navigation Container Wrapper (Analytics Logic ပါဝင်သည်)
 const NavigationWrapper = () => {
   const { isDarkMode } = useContext(SettingsContext);
+  
+  // Analytics အတွက် Ref များ
+  const navigationRef = useRef();
+  const routeNameRef = useRef();
 
   return (
-    <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
+    <NavigationContainer 
+      ref={navigationRef}
+      theme={isDarkMode ? DarkTheme : DefaultTheme}
+      // App စဖွင့်ချင်း လက်ရှိ Screen နာမည်ကို မှတ်ထားမည်
+      onReady={() => {
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      // Screen ပြောင်းလဲမှုတိုင်းကို Firebase သို့ ပို့ပေးမည်
+      onStateChange={async () => {
+        const previousScreenName = routeNameRef.current;
+        const currentRoute = navigationRef.current.getCurrentRoute();
+        const currentScreenName = currentRoute?.name;
+
+        if (previousScreenName !== currentScreenName) {
+          // Firebase Analytics သို့ Screen View Data ပို့ခြင်း
+          await analytics().logScreenView({
+            screen_name: currentScreenName,
+            screen_class: currentScreenName,
+          });
+        }
+        
+        // နောက်တစ်ကြိမ် တိုက်စစ်ရန်အတွက် လက်ရှိ screen name ကို update လုပ်ထားမည်
+        routeNameRef.current = currentScreenName;
+      }}
+    >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={MyTabs} />
         <Stack.Screen name="SubList" component={SubListScreen} />
