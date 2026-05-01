@@ -1,14 +1,11 @@
-import React, { useContext, useRef, useEffect } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
+import React, { useContext, useRef } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-// Firebase & Notifee Imports
+// Firebase Analytics (Notification မဟုတ်တဲ့အတွက် ဆက်ထားနိုင်ပါတယ်)
 import analytics from '@react-native-firebase/analytics';
-import messaging from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance } from '@notifee/react-native';
 
 // Screens
 import HomeScreen from './src/screen/HomeScreen';
@@ -26,7 +23,7 @@ import { SettingsProvider, SettingsContext } from './src/context/SettingsContext
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// ၁။ Bottom Tab Component
+// ၁။ Bottom Tab Navigator
 function MyTabs() {
   const { isDarkMode } = useContext(SettingsContext);
 
@@ -69,7 +66,7 @@ function MyTabs() {
   );
 }
 
-// ၂။ Navigation Wrapper (Analytics Logic)
+// ၂။ Navigation Logic & Analytics
 const NavigationWrapper = () => {
   const { isDarkMode } = useContext(SettingsContext);
   const navigationRef = useRef();
@@ -88,6 +85,7 @@ const NavigationWrapper = () => {
         const currentScreenName = currentRoute?.name;
 
         if (previousScreenName !== currentScreenName) {
+          // Screen View တွေကို Analytics မှာ သိနိုင်ဖို့
           await analytics().logScreenView({
             screen_name: currentScreenName,
             screen_class: currentScreenName,
@@ -105,57 +103,8 @@ const NavigationWrapper = () => {
   );
 };
 
-// ၃။ Main App (Push Notification & Notifee Logic)
+// ၃။ Main Root App
 const App = () => {
-
-  useEffect(() => {
-    // Permission တောင်းခြင်း
-    const requestUserPermission = async () => {
-      if (Platform.OS === 'android' && Platform.Version >= 33) {
-        await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-      }
-      await messaging().requestPermission();
-    };
-
-    // Device Token ယူခြင်း
-    const getToken = async () => {
-      try {
-        const token = await messaging().getToken();
-        console.log('FCM Device Token:', token);
-      } catch (error) {
-        console.log('Error getting token:', error);
-      }
-    };
-
-    // Foreground Message (Notifee သုံးပြီး Notification Bar မှာ ပြခြင်း)
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      // Android Channel ဆောက်ခြင်း
-      const channelId = await notifee.createChannel({
-        id: 'default',
-        name: 'Default Channel',
-        importance: AndroidImportance.HIGH,
-      });
-
-      // Notification ပြသခြင်း
-      await notifee.displayNotification({
-        title: remoteMessage.notification?.title || 'Notification',
-        body: remoteMessage.notification?.body || '',
-        android: {
-          channelId,
-          importance: AndroidImportance.HIGH,
-          pressAction: {
-            id: 'default',
-          },
-        },
-      });
-    });
-
-    requestUserPermission();
-    getToken();
-
-    return unsubscribe;
-  }, []);
-
   return (
     <SettingsProvider>
       <FavoriteProvider>
